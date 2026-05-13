@@ -15,6 +15,7 @@
             --pastel-verde: #a8d5ba;
             --texto-oscuro: #4a4a4a;
             --azul-fuerte: #3498db;
+            --amarillo-claro: #fff9c4; /* Nuevo amarillo claro para respiración */
         }
 
         body {
@@ -50,7 +51,7 @@
             font-family: 'Quicksand'; font-size: 16px; text-align: center; margin-bottom: 20px;
         }
 
-        /* --- BOTONES EMOCIONES --- */
+        /* --- BOTONES EMOCIONES (COORDENADAS) --- */
         .grid-emociones {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-bottom: 15px;
         }
@@ -69,7 +70,7 @@
             background-color: #f4f8fb; transform: scale(1.05); 
             border-color: #2c3e50; border-width: 4px;
         }
-        .emoji-grande { font-size: 30px; }
+        .emoji-grande { font-size: 30px; letter-spacing: -5px; margin-right: 5px;}
 
         /* --- BOTONES INTENSIDAD --- */
         .botones-intensidad { display: flex; justify-content: space-between; gap: 10px; width: 100%; margin-bottom: 20px;}
@@ -92,12 +93,12 @@
         .btn-principal {
             background-color: var(--pastel-verde); color: #2c3e50; border: none;
             padding: 15px 30px; border-radius: 30px; font-size: 16px; font-weight: 700;
-            cursor: pointer; width: 85%; margin-top: auto; margin-bottom: 10px; transition: 0.3s;
+            cursor: pointer; width: 85%; margin-top: auto; margin-bottom: 10px; transition: 0.3s; flex-shrink: 0;
         }
         .btn-secundario { background-color: #e0e0e0; margin-top: 0; }
         .btn-outline { background: transparent; border: 2px solid #2c3e50; margin-top: 10px;}
 
-        /* --- TARJETAS ESTRATEGIA --- */
+        /* --- TARJETAS --- */
         .tarjeta-ruta {
             background: white; width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 15px;
             display: flex; align-items: flex-start; gap: 15px; border-left: 5px solid var(--texto-oscuro);
@@ -105,19 +106,27 @@
         }
         .tarjeta-herramienta {
             background: var(--pastel-azul); border-radius: 15px; padding: 10px 15px; 
-            display: flex; align-items: center; gap: 10px; cursor: pointer; margin-top: 10px; font-weight: bold;
+            display: flex; align-items: center; gap: 10px; cursor: pointer; margin-top: 10px; font-weight: bold; flex-shrink: 0;
+        }
+        .caja-texto-explicacion {
+            background: white; padding: 15px; border-radius: 15px; text-align: left; font-size: 14px;
+            overflow-y: auto; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; flex-grow: 1; border: 1px solid #eee;
         }
 
-        /* --- INSIGNIAS --- */
+        /* --- INSIGNIAS Y AUTOCUIDADO --- */
         .grid-insignias {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-top: 20px;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-top: 10px; margin-bottom: 20px;
         }
         .slot-insignia {
             width: 50px; height: 50px; background-color: #f0f0f0; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 25px;
-            border: 2px dashed #ccc; color: transparent; text-shadow: 0 0 0 #bbb;
+            display: flex; justify-content: center; align-items: center; font-size: 20px;
+            border: 2px dashed #ccc; color: transparent; text-shadow: 0 0 0 #bbb; position: relative;
         }
-        .slot-insignia.obtenida { background-color: var(--pastel-amarillo); border-style: solid; border-color: #f1c40f; color: black; text-shadow: none; }
+        .slot-insignia.obtenida { background-color: var(--pastel-amarillo); border-style: solid; border-color: #f1c40f; color: black; text-shadow: none; cursor: pointer; }
+        .tarjeta-autocuidado {
+            background: #fff3cd; border: 2px solid #ffeeba; border-radius: 15px; padding: 15px; text-align: left;
+            font-size: 14px; margin-bottom: 15px; display: none; width: 100%; box-sizing: border-box;
+        }
 
         /* --- RESPIRACIÓN Y SENTIDOS --- */
         .caja-respiracion {
@@ -144,7 +153,11 @@
 
     <!-- PANTALLA 0: INICIO -->
     <div id="pantalla-inicio" class="pantalla activa">
-        <span style="font-size: 40px; margin-bottom: 5px;">🗺️</span>
+        <!-- Logo del colegio y mapa ampliados -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px;">
+            <span style="font-size: 80px; line-height: 1;">🗺️</span>
+        </div>
+        
         <h1>Punto de Partida</h1>
         <p>Bienvenido al sistema <strong>GPS: Gestiono, Pienso y Soy</strong>.</p>
         
@@ -158,20 +171,20 @@
     <!-- PANTALLA 1: RADAR (EMOCIÓN E INTENSIDAD) -->
     <div id="pantalla-radar" class="pantalla">
         <h1>Tu Tablero</h1>
-        <p id="saludo-usuario">Hola, ¿qué señal define tu estado?</p>
+        <p id="saludo-usuario">Hola, ¿qué coordenada define tu estado?</p>
 
         <div class="grid-emociones">
             <button class="btn-señal tristeza" onclick="seleccionar('emocion', 'Tristeza', this)">
-                <span class="emoji-grande">💧</span> Vía Resbaladiza<br>(Tristeza)
+                <span class="emoji-grande">📍💧</span> Coord. de Lluvia<br>(Tristeza)
             </button>
             <button class="btn-señal ansiedad" onclick="seleccionar('emocion', 'Ansiedad', this)">
-                <span class="emoji-grande">⚡</span> Zona de Obras<br>(Ansiedad)
+                <span class="emoji-grande">📍🚧</span> Coord. de Alerta<br>(Ansiedad)
             </button>
             <button class="btn-señal verguenza" onclick="seleccionar('emocion', 'Vergüenza', this)">
-                <span class="emoji-grande">😳</span> Niebla Densa<br>(Vergüenza)
+                <span class="emoji-grande">📍🌫️</span> Coord. de Niebla<br>(Vergüenza)
             </button>
             <button class="btn-señal enojo" onclick="seleccionar('emocion', 'Enojo', this)">
-                <span class="emoji-grande">🔥</span> Tráfico Pesado<br>(Enojo)
+                <span class="emoji-grande">📍🛑</span> Coord. de Bloqueo<br>(Enojo)
             </button>
         </div>
 
@@ -188,33 +201,48 @@
     <!-- PANTALLA 1.5: CAUSAS / CONTEXTO -->
     <div id="pantalla-causas" class="pantalla">
         <h1>Contexto de Vía</h1>
-        <p id="texto-causas">¿Qué factores crees que influyeron en este recorrido?</p>
+        <p id="texto-causas">¿Qué factores de la ruta crees que influyeron?</p>
         
-        <div class="etiquetas-grid">
-            <button class="etiqueta" onclick="toggleEtiqueta(this)">🏫 Colegio</button>
-            <button class="etiqueta" onclick="toggleEtiqueta(this)">👨‍👩‍👧 Familia</button>
-            <button class="etiqueta" onclick="toggleEtiqueta(this)">💬 Amigos/Pareja</button>
-            <button class="etiqueta" onclick="toggleEtiqueta(this)">🥱 Cansancio físico</button>
-            <button class="etiqueta" onclick="toggleEtiqueta(this)">📚 Sobrecarga</button>
-            <button class="etiqueta" onclick="toggleEtiqueta(this)">🤷 No estoy seguro/a</button>
+        <div class="etiquetas-grid" id="contenedor-etiquetas">
+            <button class="etiqueta" onclick="toggleEtiqueta(this)" data-id="colegio">🏫 Colegio</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)" data-id="familia">👨‍👩‍👧 Familia</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)" data-id="amigos">💬 Amigos/Pareja</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)" data-id="cansancio">🥱 Cansancio físico</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)" data-id="sobrecarga">📚 Sobrecarga</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)" data-id="nose">🤷 No estoy seguro/a</button>
         </div>
 
-        <button class="btn-principal" onclick="calcularRuta()">Calcular Ruta</button>
+        <button class="btn-principal" onclick="irAExplicacion()">Analizar Emoción</button>
         <button class="btn-principal btn-secundario" onclick="navegar('pantalla-radar')">Atrás</button>
+    </div>
+
+    <!-- PANTALLA 1.8: PSICOEDUCACIÓN -->
+    <div id="pantalla-explicacion" class="pantalla">
+        <h1 id="titulo-explicacion">Comprendiendo la Vía</h1>
+        <p style="font-size: 13px; margin-bottom: 10px;">Ninguna emoción es "mala". Son mensajeras que nos dan información sobre el entorno.</p>
+        
+        <div class="caja-texto-explicacion" id="texto-psicoeducacion">
+            <!-- Se llena con JS -->
+        </div>
+
+        <button class="btn-principal" onclick="calcularRuta()">Generar Mi Ruta</button>
     </div>
 
     <!-- PANTALLA 2: ESTRATEGIAS DINÁMICAS -->
     <div id="pantalla-estrategias" class="pantalla">
         <h1 style="font-size: 20px;">GPS Recalculando...</h1>
+        
+        <div id="mensaje-contexto" style="background: #f0f0f0; border-radius: 10px; padding: 10px; font-size: 13px; font-style: italic; margin-bottom: 15px; width: 100%; box-sizing: border-box;"></div>
+
         <p id="texto-estrategia-nivel" style="font-weight: bold; margin-bottom: 10px;"></p>
 
-        <div id="contenedor-estrategias" style="width: 100%; overflow-y: auto; flex-grow: 1;">
+        <div id="contenedor-estrategias" style="width: 100%; flex-grow: 1;">
             <!-- Estrategias generadas por JS -->
         </div>
 
         <!-- Herramienta siempre disponible -->
         <div class="tarjeta-herramienta" onclick="prepararRespiracion()">
-            <span style="font-size: 20px;">🔲</span> Herramienta extra: Respiración Guiada
+            <span style="font-size: 20px;">🔲</span> Herramienta extra: Respiración
         </div>
 
         <button class="btn-principal" onclick="finalizarRuta()" style="margin-top: 15px;">🏁 Finalizar Recorrido</button>
@@ -223,17 +251,35 @@
     <!-- PANTALLA 3: GALERÍA DE INSIGNIAS -->
     <div id="pantalla-galeria" class="pantalla">
         <h1>Mi Colección</h1>
-        <p>Has obtenido <strong id="texto-conteo-insignias">0</strong> de 20 insignias de navegación.</p>
+        <p>Has desbloqueado <strong id="texto-conteo-insignias">0</strong> estrategias secretas.</p>
         
         <div class="grid-insignias" id="contenedor-slots">
             <!-- Slots generados por JS -->
         </div>
 
-        <button class="btn-principal" onclick="navegar('pantalla-inicio')" style="margin-top: 30px;">Volver al Inicio</button>
+        <div class="tarjeta-autocuidado" id="vista-estrategia-desbloqueada">
+            Selecciona una insignia dorada para ver tu estrategia de autocuidado desbloqueada.
+        </div>
+
+        <button class="btn-principal" onclick="navegar('pantalla-inicio')" style="margin-top: auto;">Volver al Inicio</button>
     </div>
 
-    <!-- PANTALLAS INTERACTIVAS (Respiración y Sentidos) -->
-    <div id="pantalla-respiracion" class="pantalla" style="background-color: var(--pastel-verde);">
+    <!-- PANTALLA ÉXITO (GANA INSIGNIA) -->
+    <div id="pantalla-exito" class="pantalla">
+        <h1>¡Ruta Completada!</h1>
+        <span style="font-size: 60px; margin: 10px 0;">🎖️</span>
+        <p>Excelente trabajo, <strong id="nombre-exito"></strong>.</p>
+        <p>Te has convertido en un <strong id="nombre-rango"></strong> y desbloqueaste esta estrategia de autocuidado:</p>
+        
+        <div class="tarjeta-autocuidado" style="display: block; margin-bottom: 20px;" id="nuevo-autocuidado-exito">
+        </div>
+
+        <button class="btn-principal" onclick="reiniciarApp()">Iniciar Nuevo Viaje</button>
+        <button class="btn-principal btn-secundario" onclick="verGaleriaInsignias()">Ver Colección</button>
+    </div>
+
+    <!-- PANTALLAS INTERACTIVAS -->
+    <div id="pantalla-respiracion" class="pantalla" style="background-color: var(--amarillo-claro);">
         <h1>Circuito de 4 Tiempos</h1>
         <p>Sigue el punto azul. Respira a su misma velocidad.</p>
         <div class="caja-respiracion">
@@ -252,105 +298,144 @@
         <button class="btn-principal btn-secundario" onclick="navegar('pantalla-estrategias')">Volver</button>
     </div>
 
-    <!-- PANTALLA ÉXITO (GANA INSIGNIA) -->
-    <div id="pantalla-exito" class="pantalla">
-        <h1>¡Ruta Completada!</h1>
-        <span style="font-size: 60px; margin: 20px 0;">🧭</span>
-        <p>Excelente trabajo gestionando este recorrido, <strong id="nombre-exito"></strong>.</p>
-        <p>Has sumado 1 insignia más a tu pasaporte.</p>
-        <button class="btn-principal" onclick="reiniciarApp()">Iniciar Nuevo Viaje</button>
-        <button class="btn-principal btn-secundario" onclick="verGaleriaInsignias()">Ver Colección</button>
-    </div>
-
 </div>
 
 <script>
     let nombre = "";
     let emocionAct = "";
     let intAct = "";
+    let causaSeleccionada = "";
     let insignias = 0;
     const maxInsignias = 20;
 
-    // Inicializar slots de insignias
+    // --- BASE DE DATOS DE TEXTOS ---
+    const textosPsicoeducacion = {
+        "Tristeza": "<strong>💧 Tristeza:</strong> Es la emoción del procesamiento y la pausa. Aparece cuando experimentamos una pérdida o expectativas no cumplidas.<br><br><strong>¿Cuál es su propósito?</strong> Nos obliga a detenernos, conservar energía, reflexionar y señalar a los demás que necesitamos apoyo y conexión.<br><br><strong>¿En el cuerpo?</strong> Genera pesadez, falta de energía, nudo en la garganta y necesidad de llorar. El sistema entra en 'baja energía'.<br><br><strong>¿En la mente?</strong> Fomenta la introspección hacia el pasado. En exceso, puede convertirse en rumiación.",
+        "Ansiedad": "<strong>⚡ Ansiedad y Miedo:</strong> Es una respuesta hacia el futuro. El sistema de alarma del cerebro ante una posible amenaza.<br><br><strong>¿Cuál es su propósito?</strong> Preparar al cuerpo para la acción inmediata (luchar, huir o paralizarse). Nos mantiene alerta para sobrevivir.<br><br><strong>¿En el cuerpo?</strong> Acelera el ritmo cardíaco, tensión en cuello y hombros, respiración corta, y a veces 'mariposas' estomacales. Pura energía de activación.<br><br><strong>¿En la mente?</strong> Nos enfoca en escenarios futuros catastróficos. Genera hipervigilancia, dificultando estar en el presente.",
+        "Vergüenza": "<strong>😳 Vergüenza:</strong> Emoción profundamente social. Nos dice 'yo soy malo o defectuoso', a diferencia de la culpa ('hice algo malo').<br><br><strong>¿Cuál es su propósito?</strong> Evitar que seamos expulsados del grupo por romper una norma social. Un mecanismo de control para sobrevivir en la 'tribu'.<br><br><strong>¿En el cuerpo?</strong> Rubor facial, mirada baja, postura encorvada. El cuerpo intenta 'hacerse pequeño' para evitar ser visto.<br><br><strong>¿En la mente?</strong> Deseo abrumador de aislarnos y desconectarnos. Genera un diálogo interno muy autocrítico y sensación de ser juzgados.",
+        "Enojo": "<strong>🔥 Enojo o Ira:</strong> Es la emoción de la defensa y los límites. Surge ante la injusticia o cuando sentimos que nos faltan al respeto.<br><br><strong>¿Cuál es su propósito?</strong> Darnos la fuerza, el valor y la energía para defendernos, restaurar límites o superar barreras difíciles.<br><br><strong>¿En el cuerpo?</strong> Energía en la parte superior. Calor, tensión extrema en la mandíbula y los puños. Un torrente de adrenalina que pide ser liberado.<br><br><strong>¿En la mente?</strong> Reduce la empatía y da 'visión de túnel' hacia la persona/situación. Genera pensamientos de ataque y empuja a actuar sin medir consecuencias."
+    };
+
+    const nombresInsignias = [
+        "Navegante Novato", "Explorador de Rutas", "Piloto Consciente", "Rastreador de Vías", 
+        "Capitán de Pausas", "Viajero Resiliente", "Estratega del Asfalto", "Conductor Enfocado",
+        "Maestro del Freno", "Guardián de Límites", "Explorador de Niebla", "Piloto de Tormentas",
+        "Navegante Nocturno", "Especialista en Desvíos", "Conductor Zen", "Capitán de Terreno",
+        "Viajero Auténtico", "Experto en Coordenadas", "Maestro del Volante", "Gran GPS Humano"
+    ];
+
+    const estrategiasAutocuidado = [
+        "<strong>Dormir 7 a 8 horas innegociables:</strong> Regula el metabolismo, el cortisol y repara el cerebro. No hay sustituto para el sueño.",
+        "<strong>Hidratación al despertar:</strong> Beber un vaso de agua grande nada más levantarse reactiva el metabolismo tras el ayuno nocturno.",
+        "<strong>Luz solar matutina:</strong> Exponerse al sol de 10 a 15 minutos en la mañana regula el ritmo circadiano y la energía.",
+        "<strong>Duchas de contraste:</strong> Terminar la ducha con 30 segundos de agua fría genera un pico de dopamina y mejora la circulación.",
+        "<strong>Movimiento incidental:</strong> Optar por escaleras, caminar al hablar o estirar 2 min cada hora previene dolores crónicos.",
+        "<strong>Consumo estratégico de cafeína:</strong> Retrasar el primer café 90 minutos evita el 'bajón' de energía en la tarde.",
+        "<strong>Comer sin distracciones:</strong> Masticar sin pantallas mejora la digestión inmediata y regula las señales de saciedad.",
+        "<strong>Contacto físico:</strong> Dar un abrazo sostenido de más de 20 segundos libera oxitocina, reduciendo el estrés casi instantáneamente.",
+        "<strong>Regla de los 2 minutos:</strong> Si una tarea (un correo corto, lavar un plato) toma menos de 2 minutos, hazla de inmediato. Libera memoria RAM mental.",
+        "<strong>Vaciado mental (Brain dump):</strong> Escribir tareas, preocupaciones e ideas en un papel para sacar la carga de la mente y reducir la ansiedad.",
+        "<strong>Desactivar notificaciones:</strong> Apagar alertas del celular recupera horas de atención fragmentada al día.",
+        "<strong>El 'No' por defecto:</strong> Ante solicitudes no urgentes, pide tiempo para pensar en lugar de aceptar de inmediato. Protege tu energía.",
+        "<strong>Automatizar decisiones diarias:</strong> Preparar la ropa la noche anterior evita la 'fatiga de decisión' a primera hora.",
+        "<strong>Agendar el descanso:</strong> Tratar el tiempo libre con la misma seriedad que una reunión de trabajo o cita médica.",
+        "<strong>Limitar consumo de noticias:</strong> Revisar noticias una sola vez al día evita la saturación de cortisol por información negativa.",
+        "<strong>Etiquetado emocional:</strong> Ponerle un nombre exacto a la emoción (frustración, miedo) reduce automáticamente la actividad de la amígdala.",
+        "<strong>Auditoría de energía:</strong> Identifica cuándo tienes más concentración y reserva esas horas para el trabajo difícil.",
+        "<strong>Técnica Pomodoro:</strong> Trabajar 45 minutos con descansos estrictos de 10 minutos previene el agotamiento mental profundo.",
+        "<strong>Alejar el teléfono de la cama:</strong> Cargar el celular en otra habitación evita el scroll nocturno y mejora el sueño.",
+        "<strong>Delegar el 'suficientemente bueno':</strong> Aceptar que si alguien hace una tarea al 80% de cómo la harías tú, debes delegarla y soltar el perfeccionismo."
+    ];
+
+    // Inicializar slots
     const contenedorSlots = document.getElementById('contenedor-slots');
     for(let i=0; i<maxInsignias; i++){
-        contenedorSlots.innerHTML += `<div class="slot-insignia" id="insignia-${i}">🎖️</div>`;
+        contenedorSlots.innerHTML += `<div class="slot-insignia" id="insignia-${i}" onclick="verEstrategia(${i})">⭐</div>`;
     }
 
+    // --- NAVEGACIÓN ---
     function navegar(id) {
         document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
         document.getElementById(id).classList.add('activa');
     }
 
     function iniciarViaje() {
-        nombre = document.getElementById('nombre-usuario').value.trim() || "Conductor(a)";
-        document.getElementById('saludo-usuario').innerText = `Hola ${nombre}, ¿qué señal define tu estado?`;
-        document.getElementById('texto-causas').innerText = `${nombre}, ¿qué factores crees que influyeron en este recorrido?`;
+        nombre = document.getElementById('nombre-usuario').value.trim() || "Conductor/a";
+        document.getElementById('saludo-usuario').innerText = `Hola ${nombre}, ¿qué coordenada define tu estado?`;
+        document.getElementById('texto-causas').innerText = `${nombre}, ¿qué factores de la ruta crees que influyeron?`;
         navegar('pantalla-radar');
     }
 
     function seleccionar(tipo, valor, boton) {
         if(tipo === 'emocion') { emocionAct = valor; }
         else { intAct = valor; }
-        
         let clase = tipo === 'emocion' ? '.btn-señal' : '.btn-int';
         boton.parentElement.querySelectorAll(clase).forEach(b => b.classList.remove('activa', 'seleccionada'));
         boton.classList.add(tipo === 'emocion' ? 'seleccionada' : 'activa');
     }
 
     function irACausas() {
-        if (!emocionAct || !intAct) { alert("Selecciona la emoción y la intensidad."); return; }
+        if (!emocionAct || !intAct) { alert("Selecciona tu coordenada y la intensidad."); return; }
         navegar('pantalla-causas');
     }
 
-    function toggleEtiqueta(btn) { btn.classList.toggle('activa'); }
+    function toggleEtiqueta(btn) { 
+        document.querySelectorAll('.etiqueta').forEach(b => b.classList.remove('activa'));
+        btn.classList.add('activa');
+        causaSeleccionada = btn.getAttribute('data-id');
+    }
+
+    function irAExplicacion() {
+        document.getElementById('texto-psicoeducacion').innerHTML = textosPsicoeducacion[emocionAct];
+        navegar('pantalla-explicacion');
+    }
 
     function calcularRuta() {
         const cont = document.getElementById('contenedor-estrategias');
         const subt = document.getElementById('texto-estrategia-nivel');
-        let color = intAct === 'baja' ? '#27ae60' : (intAct === 'media' ? '#d35400' : '#c0392b');
+        const msjContexto = document.getElementById('mensaje-contexto');
         
-        subt.innerText = `Ruta para: ${emocionAct} (${intAct.toUpperCase()})`;
+        let color = intAct === 'baja' ? '#27ae60' : (intAct === 'media' ? '#d35400' : '#c0392b');
+        subt.innerText = `Ruta trazada para: ${emocionAct} (${intAct.toUpperCase()})`;
         subt.style.color = color;
 
-        let html = "";
+        // Generar Frase de Contexto
+        let frase = "";
+        if(causaSeleccionada === 'colegio') frase = `Veo que el colegio está generando tráfico emocional, ${nombre}. Tu valor personal no se define por un día difícil en clases o una nota.`;
+        else if(causaSeleccionada === 'familia') frase = `Transitar las vías familiares a veces es complejo, ${nombre}. Está bien pedir espacio para procesar antes de volver a interactuar.`;
+        else if(causaSeleccionada === 'amigos') frase = `Las relaciones son un viaje compartido y hoy hay turbulencia. Recuerda que expresar lo que necesitas es poner una señal de tránsito clara.`;
+        else if(causaSeleccionada === 'cansancio') frase = `Tu tanque de energía está bajo, ${nombre}. Antes de procesar todo a fondo, tu cuerpo te está exigiendo un descanso vital.`;
+        else if(causaSeleccionada === 'sobrecarga') frase = `Llevas demasiado peso en el vehículo, ${nombre}. Necesitamos hacer una parada para descargar lo que no es urgente llevar hoy.`;
+        else frase = `A veces el GPS pierde la señal de la causa exacta y está bien, ${nombre}. Lo importante ahora es regular el vehículo.`;
+        
+        msjContexto.innerHTML = `<strong>Aviso de ruta:</strong> ${frase}`;
 
-        // ESTRATEGIAS SEGÚN EMOCIÓN E INTENSIDAD
+        // Estrategias
+        let html = "";
         if (emocionAct === 'Tristeza') {
-            if (intAct === 'baja') {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">📝</span><div><strong>Externalización narrativa</strong><br>Oye ${nombre}, la tristeza baja la energía. Escribe en un cuaderno exactamente lo que sientes, sin filtros. Ponerlo en papel evita que la mente dé vueltas.</div></div>`;
-            } else if (intAct === 'media') {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🪴</span><div><strong>Conexión y cuidado externo</strong><br>${nombre}, haz algo que requiera tu atención suave. Riega o limpia las hojas de tus plantas, o acaricia y juega con un gato/mascota. Esto ancla al presente.</div></div>`;
-            } else {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🧊</span><div><strong>Choque Térmico (TIPP)</strong><br>Es momento de regular el cuerpo, ${nombre}. Lávate la cara con agua muy fría o sostén unos cubos de hielo. Esto activa un reflejo que baja tu ritmo cardíaco y frena el llanto extremo.</div></div>`;
-            }
+            if (intAct === 'baja') html = `<div class="tarjeta-ruta"><span style="font-size:30px">📝</span><div><strong>Externalización narrativa</strong><br>La tristeza baja la energía. Escribe en un cuaderno exactamente lo que sientes, sin filtros. Ponerlo en papel evita la rumiación.</div></div>`;
+            else if (intAct === 'media') html = `<div class="tarjeta-ruta"><span style="font-size:30px">🪴</span><div><strong>Conexión y cuidado externo</strong><br>Haz algo sencillo que requiera tu atención plena: riega las plantas o acaricia una mascota. Esto genera anclaje al presente y propósito.</div></div>`;
+            else html = `<div class="tarjeta-ruta"><span style="font-size:30px">🧊</span><div><strong>Choque Térmico (TIPP)</strong><br>Lávate el rostro con agua muy fría o sostén hielo en las manos. Esto activa un reflejo que baja tu ritmo cardíaco y frena el llanto incontrolable.</div></div>`;
         } 
         else if (emocionAct === 'Ansiedad') {
-            if (intAct === 'baja') {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🧠</span><div><strong>Sobrecarga cognitiva</strong><br>${nombre}, quitémosle energía a la ansiedad. Cuenta hacia atrás desde 100 de 7 en 7, o recita el alfabeto (A-1, B-2, C-3).</div></div>`;
-            } else if (intAct === 'media') {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">📳</span><div><strong>Descarga Somática (Shaking)</strong><br>${nombre}, ponte de pie y sacude tu cuerpo vigorosamente por 1 minuto. Empieza por las manos, brazos, hombros y piernas para liberar adrenalina.</div></div>`;
-            } else {
-                html = `<div class="tarjeta-ruta" onclick="iniciarSentidos()" style="background:#fff3cd; cursor:pointer; border-color:#d35400;"><span style="font-size:30px">🖐️</span><div><strong>Enraizamiento (Grounding 5-4-3-2-1)</strong><br>Toque aquí para iniciar un ejercicio guiado que obligará a tu mente a salir del futuro y anclarse al presente.</div></div>`;
-            }
+            if (intAct === 'baja') html = `<div class="tarjeta-ruta"><span style="font-size:30px">🧠</span><div><strong>Sobrecarga cognitiva</strong><br>Robémosle recursos a la ansiedad. Cuenta hacia atrás desde 100 de 7 en 7, o recita el alfabeto intercalando números (A-1, B-2, C-3).</div></div>`;
+            else if (intAct === 'media') html = `<div class="tarjeta-ruta"><span style="font-size:30px">📳</span><div><strong>Descarga Somática (Shaking)</strong><br>Ponte de pie y sacude todo tu cuerpo vigorosamente por 1 minuto (manos, brazos, hombros, piernas) para liberar adrenalina muscular.</div></div>`;
+            else html = ``; // Se manejará exclusivamente con la tarjeta global de 5 sentidos
         }
         else if (emocionAct === 'Vergüenza') {
-            if (intAct === 'baja') {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🪞</span><div><strong>Autocompasión</strong><br>${nombre}, mírate al espejo y dite exactamente las mismas palabras amables que le dirías a un amigo muy querido que acaba de cometer ese mismo error.</div></div>`;
-            } else if (intAct === 'media') {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">⚖️</span><div><strong>Tribunal de evidencia</strong><br>Divide una hoja en dos, ${nombre}. A un lado pon la idea catastrófica. Al otro, escribe los hechos objetivos y comprobables que demuestran que esa idea no es 100% cierta.</div></div>`;
-            } else {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🦸‍♀️</span><div><strong>Acción Opuesta</strong><br>La vergüenza te pide esconderte. ${nombre}, haz lo opuesto: adopta una postura expansiva (cabeza en alto, pecho abierto) y camina así. Cambiar tu cuerpo altera el mensaje a tu cerebro.</div></div>`;
-            }
+            if (intAct === 'baja') html = `<div class="tarjeta-ruta"><span style="font-size:30px">🪞</span><div><strong>Autocompasión</strong><br>Mírate al espejo y dite exactamente las mismas palabras de consuelo que le dirías a un amigo muy querido que acaba de cometer ese error.</div></div>`;
+            else if (intAct === 'media') html = `<div class="tarjeta-ruta"><span style="font-size:30px">⚖️</span><div><strong>Tribunal de evidencia</strong><br>Divide una hoja en dos. A un lado escribe la idea catastrófica. Al otro, escribe los hechos objetivos que demuestran que eso no es 100% cierto.</div></div>`;
+            else html = `<div class="tarjeta-ruta"><span style="font-size:30px">🦸‍♀️</span><div><strong>Acción Opuesta</strong><br>La vergüenza te pide encogerte. Haz lo opuesto: adopta intencionalmente una postura expansiva (pecho abierto, cabeza alta) y camina así.</div></div>`;
         }
         else if (emocionAct === 'Enojo') {
-            if (intAct === 'baja') {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🚶</span><div><strong>Ruptura visual</strong><br>${nombre}, date la vuelta y sal de ese espacio por 3 a 5 minutos. Aprovecha para abrir y cerrar la mandíbula y estirar el cuello para liberar tensión.</div></div>`;
-            } else if (intAct === 'media') {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">📄</span><div><strong>Canalización segura</strong><br>Tu cuerpo quiere destruir, déjalo de forma segura. ${nombre}, toma revistas viejas o cartón y rásgalo con mucha fuerza, o amasa plastilina golpeándola contra una mesa.</div></div>`;
-            } else {
-                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🧱</span><div><strong>Esfuerzo Isométrico</strong><br>Acércate a una pared sólida, ${nombre}. Pon ambas manos planas y empuja con toda tu fuerza por 60 segundos, como si quisieras mover el edificio. Esto agota tu adrenalina rápido.</div></div>`;
-            }
+            if (intAct === 'baja') html = `<div class="tarjeta-ruta"><span style="font-size:30px">🚶</span><div><strong>Ruptura visual</strong><br>Sal físicamente del espacio detonante por 3 minutos. Aprovecha para estirar el cuello y abrir/cerrar la mandíbula para liberar tensión.</div></div>`;
+            else if (intAct === 'media') html = `<div class="tarjeta-ruta"><span style="font-size:30px">📄</span><div><strong>Canalización segura</strong><br>Satisface el impulso de destruir sin dañar a nadie: toma cartón o revistas y rásgalos con fuerza, o amasa plastilina golpeándola fuerte.</div></div>`;
+            else html = `<div class="tarjeta-ruta"><span style="font-size:30px">🧱</span><div><strong>Esfuerzo Isométrico</strong><br>Acércate a una pared sólida, pon tus manos y empuja con toda tu fuerza por 60 segundos, como si quisieras moverla. Agotará tu adrenalina.</div></div>`;
+        }
+
+        // Anclar estrategia de 5 sentidos a la intensidad ALTA para TODAS las emociones
+        if (intAct === 'alta') {
+            html += `<div class="tarjeta-ruta" onclick="iniciarSentidos()" style="background:#fff3cd; cursor:pointer; border-color:#d35400;"><span style="font-size:30px">🖐️</span><div><strong>Enraizamiento (5 Sentidos)</strong><br>Toca aquí para iniciar un ejercicio guiado que obligará a tu mente a anclarse al momento presente.</div></div>`;
         }
 
         cont.innerHTML = html;
@@ -360,6 +445,8 @@
     function finalizarRuta() {
         if(insignias < maxInsignias) {
             document.getElementById(`insignia-${insignias}`).classList.add('obtenida');
+            document.getElementById('nuevo-autocuidado-exito').innerHTML = estrategiasAutocuidado[insignias];
+            document.getElementById('nombre-rango').innerText = nombresInsignias[insignias];
             insignias++;
         }
         document.getElementById('texto-conteo-insignias').innerText = insignias;
@@ -368,20 +455,28 @@
     }
 
     function verGaleriaInsignias() { navegar('pantalla-galeria'); }
+    
+    function verEstrategia(index) {
+        let tarjeta = document.getElementById('vista-estrategia-desbloqueada');
+        if(index < insignias) {
+            tarjeta.style.display = "block";
+            tarjeta.innerHTML = `<span style='font-size:12px; color:#c0392b; font-weight:bold;'>Desbloqueo Nivel ${index+1}: ${nombresInsignias[index]}</span><br><br>${estrategiasAutocuidado[index]}`;
+        } else {
+            tarjeta.style.display = "block";
+            tarjeta.innerHTML = "Sigue transitando rutas emocionales para desbloquear esta estrategia secreta.";
+        }
+    }
 
     function reiniciarApp() {
-        emocionAct = ""; intAct = "";
-        document.querySelectorAll('.btn-señal').forEach(b => b.classList.remove('seleccionada'));
-        document.querySelectorAll('.btn-int').forEach(b => b.classList.remove('activa'));
-        document.querySelectorAll('.etiqueta').forEach(b => b.classList.remove('activa'));
+        emocionAct = ""; intAct = ""; causaSeleccionada = "";
+        document.querySelectorAll('.btn-señal, .btn-int, .etiqueta').forEach(b => b.classList.remove('seleccionada', 'activa'));
         detenerRespiracion();
         navegar('pantalla-inicio');
     }
 
     /* --- RESPIRACIÓN --- */
-    let intResp;
+    let intResp; let fase = 0;
     let fasesResp = ["Inhala...", "Sostén...", "Exhala...", "Sostén..."];
-    let fase = 0;
     function prepararRespiracion() {
         document.getElementById('punto-respiracion').style.animation = "none";
         document.getElementById('punto-respiracion').style.display = "none";
@@ -392,20 +487,16 @@
     function iniciarAnimacionRespiracion() {
         let p = document.getElementById('punto-respiracion');
         document.getElementById('btn-iniciar-resp').style.display = "none";
-        p.style.display = "block";
-        void p.offsetWidth;
+        p.style.display = "block"; void p.offsetWidth;
         p.style.animation = "circuitoCuadrado 16s linear infinite";
-        fase = 0;
-        document.getElementById('texto-respiracion').innerText = fasesResp[fase];
+        fase = 0; document.getElementById('texto-respiracion').innerText = fasesResp[fase];
         if(intResp) clearInterval(intResp);
         intResp = setInterval(() => {
-            fase = (fase + 1) % 4;
-            document.getElementById('texto-respiracion').innerText = fasesResp[fase];
+            fase = (fase + 1) % 4; document.getElementById('texto-respiracion').innerText = fasesResp[fase];
         }, 4000);
     }
     function detenerRespiracion() {
-        clearInterval(intResp);
-        document.getElementById('punto-respiracion').style.display = "none";
+        clearInterval(intResp); document.getElementById('punto-respiracion').style.display = "none";
         navegar('pantalla-estrategias');
     }
 
@@ -419,8 +510,7 @@
     ];
     let pasoAct = 0;
     function iniciarSentidos() {
-        pasoAct = 0;
-        actTarjetaSentido();
+        pasoAct = 0; actTarjetaSentido();
         document.getElementById('btn-siguiente-sentido').innerText = "Siguiente";
         navegar('pantalla-sentidos');
     }
