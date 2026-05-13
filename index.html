@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS: Gestiono, Pienso y Soy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fondo-app: #fdfbf7;
+            --pastel-rojo: #ffb7b2;
+            --pastel-amarillo: #ffe4b5;
+            --pastel-azul: #d0e8f2;
+            --pastel-morado: #e2d1f9;
+            --pastel-verde: #a8d5ba;
+            --texto-oscuro: #4a4a4a;
+            --azul-fuerte: #3498db;
+        }
+
+        body {
+            margin: 0; display: flex; justify-content: center; align-items: center;
+            height: 100vh; background-color: #e9ecef; font-family: 'Quicksand', sans-serif;
+            color: var(--texto-oscuro);
+        }
+
+        .app-mobile {
+            width: 360px; height: 700px; background-color: var(--fondo-app);
+            border-radius: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden; position: relative; display: flex; flex-direction: column;
+        }
+
+        .pantalla {
+            display: none; padding: 30px 20px; height: 100%; box-sizing: border-box;
+            flex-direction: column; align-items: center; text-align: center;
+            animation: fadeIn 0.4s ease-in-out; overflow-y: auto;
+        }
+
+        .pantalla.activa { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 22px; margin-bottom: 5px; color: #2c3e50; }
+        p { font-size: 15px; margin-bottom: 20px; line-height: 1.4; }
+
+        input[type="text"] {
+            width: 80%; padding: 15px; border-radius: 20px; border: 2px solid #ccc;
+            font-family: 'Quicksand'; font-size: 16px; text-align: center; margin-bottom: 20px;
+        }
+
+        /* --- BOTONES EMOCIONES --- */
+        .grid-emociones {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; margin-bottom: 15px;
+        }
+        .btn-señal {
+            background-color: white; border: 3px solid #e0e0e0; border-radius: 20px;
+            padding: 10px; font-size: 13px; font-family: 'Quicksand', sans-serif; font-weight: bold;
+            cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        .btn-señal * { pointer-events: none; } 
+        .btn-señal.enojo { border-bottom-color: var(--pastel-rojo); }
+        .btn-señal.ansiedad { border-bottom-color: var(--pastel-amarillo); }
+        .btn-señal.tristeza { border-bottom-color: var(--pastel-azul); }
+        .btn-señal.verguenza { border-bottom-color: var(--pastel-morado); }
+        
+        .btn-señal.seleccionada { 
+            background-color: #f4f8fb; transform: scale(1.05); 
+            border-color: #2c3e50; border-width: 4px;
+        }
+        .emoji-grande { font-size: 30px; }
+
+        /* --- BOTONES INTENSIDAD --- */
+        .botones-intensidad { display: flex; justify-content: space-between; gap: 10px; width: 100%; margin-bottom: 20px;}
+        .btn-int {
+            flex: 1; padding: 10px 0; border-radius: 20px; border: 2px solid #ccc;
+            background: white; font-family: 'Quicksand'; font-weight: bold; cursor: pointer;
+            transition: 0.2s; font-size: 13px; color: var(--texto-oscuro);
+        }
+        .btn-int.activa { background-color: #2c3e50; color: white; border-color: #2c3e50; }
+
+        /* --- ETIQUETAS DETONANTES --- */
+        .etiquetas-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .etiqueta {
+            background-color: white; border: 2px solid #ddd; border-radius: 20px;
+            padding: 8px 15px; font-family: 'Quicksand'; font-size: 14px; cursor: pointer; transition: 0.2s;
+        }
+        .etiqueta.activa { background-color: var(--pastel-verde); border-color: #2c3e50; font-weight: bold; }
+
+        /* --- BOTONES PRINCIPALES --- */
+        .btn-principal {
+            background-color: var(--pastel-verde); color: #2c3e50; border: none;
+            padding: 15px 30px; border-radius: 30px; font-size: 16px; font-weight: 700;
+            cursor: pointer; width: 85%; margin-top: auto; margin-bottom: 10px; transition: 0.3s;
+        }
+        .btn-secundario { background-color: #e0e0e0; margin-top: 0; }
+        .btn-outline { background: transparent; border: 2px solid #2c3e50; margin-top: 10px;}
+
+        /* --- TARJETAS ESTRATEGIA --- */
+        .tarjeta-ruta {
+            background: white; width: 100%; padding: 15px; border-radius: 15px; margin-bottom: 15px;
+            display: flex; align-items: flex-start; gap: 15px; border-left: 5px solid var(--texto-oscuro);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: left; box-sizing: border-box;
+        }
+        .tarjeta-herramienta {
+            background: var(--pastel-azul); border-radius: 15px; padding: 10px 15px; 
+            display: flex; align-items: center; gap: 10px; cursor: pointer; margin-top: 10px; font-weight: bold;
+        }
+
+        /* --- INSIGNIAS --- */
+        .grid-insignias {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-top: 20px;
+        }
+        .slot-insignia {
+            width: 50px; height: 50px; background-color: #f0f0f0; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 25px;
+            border: 2px dashed #ccc; color: transparent; text-shadow: 0 0 0 #bbb;
+        }
+        .slot-insignia.obtenida { background-color: var(--pastel-amarillo); border-style: solid; border-color: #f1c40f; color: black; text-shadow: none; }
+
+        /* --- RESPIRACIÓN Y SENTIDOS --- */
+        .caja-respiracion {
+            width: 160px; height: 160px; border: 8px solid var(--pastel-verde);
+            border-radius: 15px; position: relative; margin: 30px auto;
+            display: flex; justify-content: center; align-items: center; background-color: white; box-sizing: border-box;
+        }
+        .punto-guia {
+            width: 24px; height: 24px; background-color: var(--azul-fuerte); border-radius: 50%;
+            position: absolute; top: -16px; left: -16px; z-index: 10; display: none;
+        }
+        #texto-respiracion { font-size: 20px; font-weight: bold; z-index: 5;}
+        @keyframes circuitoCuadrado {
+            0% { top: -16px; left: -16px; } 25% { top: -16px; left: calc(100% - 8px); }
+            50% { top: calc(100% - 8px); left: calc(100% - 8px); } 75% { top: calc(100% - 8px); left: -16px; }
+            100% { top: -16px; left: -16px; }
+        }
+        .tarjeta-sentido { background: white; width: 100%; padding: 30px 20px; border-radius: 20px; margin: 20px 0; font-size: 18px; font-weight: bold; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="app-mobile">
+
+    <!-- PANTALLA 0: INICIO -->
+    <div id="pantalla-inicio" class="pantalla activa">
+        <span style="font-size: 40px; margin-bottom: 5px;">🗺️</span>
+        <h1>Punto de Partida</h1>
+        <p>Bienvenido al sistema <strong>GPS: Gestiono, Pienso y Soy</strong>.</p>
+        
+        <p style="margin-top: 10px;">¿Quién va al volante hoy?</p>
+        <input type="text" id="nombre-usuario" placeholder="Tu nombre o apodo">
+        
+        <button class="btn-principal" onclick="iniciarViaje()">Encender Motor</button>
+        <button class="btn-principal btn-outline" onclick="verGaleriaInsignias()">🏆 Ver mi Colección</button>
+    </div>
+
+    <!-- PANTALLA 1: RADAR (EMOCIÓN E INTENSIDAD) -->
+    <div id="pantalla-radar" class="pantalla">
+        <h1>Tu Tablero</h1>
+        <p id="saludo-usuario">Hola, ¿qué señal define tu estado?</p>
+
+        <div class="grid-emociones">
+            <button class="btn-señal tristeza" onclick="seleccionar('emocion', 'Tristeza', this)">
+                <span class="emoji-grande">💧</span> Vía Resbaladiza<br>(Tristeza)
+            </button>
+            <button class="btn-señal ansiedad" onclick="seleccionar('emocion', 'Ansiedad', this)">
+                <span class="emoji-grande">⚡</span> Zona de Obras<br>(Ansiedad)
+            </button>
+            <button class="btn-señal verguenza" onclick="seleccionar('emocion', 'Vergüenza', this)">
+                <span class="emoji-grande">😳</span> Niebla Densa<br>(Vergüenza)
+            </button>
+            <button class="btn-señal enojo" onclick="seleccionar('emocion', 'Enojo', this)">
+                <span class="emoji-grande">🔥</span> Tráfico Pesado<br>(Enojo)
+            </button>
+        </div>
+
+        <label style="font-weight: bold; width: 100%; text-align: left; font-size: 14px;">Velocidad / Intensidad:</label>
+        <div class="botones-intensidad">
+            <button class="btn-int" onclick="seleccionar('intensidad', 'baja', this)">Baja</button>
+            <button class="btn-int" onclick="seleccionar('intensidad', 'media', this)">Media</button>
+            <button class="btn-int" onclick="seleccionar('intensidad', 'alta', this)">Alta</button>
+        </div>
+
+        <button class="btn-principal" onclick="irACausas()">Continuar</button>
+    </div>
+
+    <!-- PANTALLA 1.5: CAUSAS / CONTEXTO -->
+    <div id="pantalla-causas" class="pantalla">
+        <h1>Contexto de Vía</h1>
+        <p id="texto-causas">¿Qué factores crees que influyeron en este recorrido?</p>
+        
+        <div class="etiquetas-grid">
+            <button class="etiqueta" onclick="toggleEtiqueta(this)">🏫 Colegio</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)">👨‍👩‍👧 Familia</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)">💬 Amigos/Pareja</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)">🥱 Cansancio físico</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)">📚 Sobrecarga</button>
+            <button class="etiqueta" onclick="toggleEtiqueta(this)">🤷 No estoy seguro/a</button>
+        </div>
+
+        <button class="btn-principal" onclick="calcularRuta()">Calcular Ruta</button>
+        <button class="btn-principal btn-secundario" onclick="navegar('pantalla-radar')">Atrás</button>
+    </div>
+
+    <!-- PANTALLA 2: ESTRATEGIAS DINÁMICAS -->
+    <div id="pantalla-estrategias" class="pantalla">
+        <h1 style="font-size: 20px;">GPS Recalculando...</h1>
+        <p id="texto-estrategia-nivel" style="font-weight: bold; margin-bottom: 10px;"></p>
+
+        <div id="contenedor-estrategias" style="width: 100%; overflow-y: auto; flex-grow: 1;">
+            <!-- Estrategias generadas por JS -->
+        </div>
+
+        <!-- Herramienta siempre disponible -->
+        <div class="tarjeta-herramienta" onclick="prepararRespiracion()">
+            <span style="font-size: 20px;">🔲</span> Herramienta extra: Respiración Guiada
+        </div>
+
+        <button class="btn-principal" onclick="finalizarRuta()" style="margin-top: 15px;">🏁 Finalizar Recorrido</button>
+    </div>
+
+    <!-- PANTALLA 3: GALERÍA DE INSIGNIAS -->
+    <div id="pantalla-galeria" class="pantalla">
+        <h1>Mi Colección</h1>
+        <p>Has obtenido <strong id="texto-conteo-insignias">0</strong> de 20 insignias de navegación.</p>
+        
+        <div class="grid-insignias" id="contenedor-slots">
+            <!-- Slots generados por JS -->
+        </div>
+
+        <button class="btn-principal" onclick="navegar('pantalla-inicio')" style="margin-top: 30px;">Volver al Inicio</button>
+    </div>
+
+    <!-- PANTALLAS INTERACTIVAS (Respiración y Sentidos) -->
+    <div id="pantalla-respiracion" class="pantalla" style="background-color: var(--pastel-verde);">
+        <h1>Circuito de 4 Tiempos</h1>
+        <p>Sigue el punto azul. Respira a su misma velocidad.</p>
+        <div class="caja-respiracion">
+            <div id="punto-respiracion" class="punto-guia"></div>
+            <div id="texto-respiracion">Prepárate...</div>
+        </div>
+        <button class="btn-principal" onclick="iniciarAnimacionRespiracion()" id="btn-iniciar-resp">Iniciar Circuito</button>
+        <button class="btn-principal btn-secundario" onclick="detenerRespiracion()">Volver</button>
+    </div>
+
+    <div id="pantalla-sentidos" class="pantalla" style="background-color: var(--pastel-amarillo);">
+        <h1>Enraizamiento (Grounding)</h1>
+        <p>Anclemos tu vehículo al presente.</p>
+        <div class="tarjeta-sentido" id="tarjeta-sentido-activa"></div>
+        <button class="btn-principal" onclick="siguienteSentido()" id="btn-siguiente-sentido">Siguiente</button>
+        <button class="btn-principal btn-secundario" onclick="navegar('pantalla-estrategias')">Volver</button>
+    </div>
+
+    <!-- PANTALLA ÉXITO (GANA INSIGNIA) -->
+    <div id="pantalla-exito" class="pantalla">
+        <h1>¡Ruta Completada!</h1>
+        <span style="font-size: 60px; margin: 20px 0;">🧭</span>
+        <p>Excelente trabajo gestionando este recorrido, <strong id="nombre-exito"></strong>.</p>
+        <p>Has sumado 1 insignia más a tu pasaporte.</p>
+        <button class="btn-principal" onclick="reiniciarApp()">Iniciar Nuevo Viaje</button>
+        <button class="btn-principal btn-secundario" onclick="verGaleriaInsignias()">Ver Colección</button>
+    </div>
+
+</div>
+
+<script>
+    let nombre = "";
+    let emocionAct = "";
+    let intAct = "";
+    let insignias = 0;
+    const maxInsignias = 20;
+
+    // Inicializar slots de insignias
+    const contenedorSlots = document.getElementById('contenedor-slots');
+    for(let i=0; i<maxInsignias; i++){
+        contenedorSlots.innerHTML += `<div class="slot-insignia" id="insignia-${i}">🎖️</div>`;
+    }
+
+    function navegar(id) {
+        document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+        document.getElementById(id).classList.add('activa');
+    }
+
+    function iniciarViaje() {
+        nombre = document.getElementById('nombre-usuario').value.trim() || "Conductor(a)";
+        document.getElementById('saludo-usuario').innerText = `Hola ${nombre}, ¿qué señal define tu estado?`;
+        document.getElementById('texto-causas').innerText = `${nombre}, ¿qué factores crees que influyeron en este recorrido?`;
+        navegar('pantalla-radar');
+    }
+
+    function seleccionar(tipo, valor, boton) {
+        if(tipo === 'emocion') { emocionAct = valor; }
+        else { intAct = valor; }
+        
+        let clase = tipo === 'emocion' ? '.btn-señal' : '.btn-int';
+        boton.parentElement.querySelectorAll(clase).forEach(b => b.classList.remove('activa', 'seleccionada'));
+        boton.classList.add(tipo === 'emocion' ? 'seleccionada' : 'activa');
+    }
+
+    function irACausas() {
+        if (!emocionAct || !intAct) { alert("Selecciona la emoción y la intensidad."); return; }
+        navegar('pantalla-causas');
+    }
+
+    function toggleEtiqueta(btn) { btn.classList.toggle('activa'); }
+
+    function calcularRuta() {
+        const cont = document.getElementById('contenedor-estrategias');
+        const subt = document.getElementById('texto-estrategia-nivel');
+        let color = intAct === 'baja' ? '#27ae60' : (intAct === 'media' ? '#d35400' : '#c0392b');
+        
+        subt.innerText = `Ruta para: ${emocionAct} (${intAct.toUpperCase()})`;
+        subt.style.color = color;
+
+        let html = "";
+
+        // ESTRATEGIAS SEGÚN EMOCIÓN E INTENSIDAD
+        if (emocionAct === 'Tristeza') {
+            if (intAct === 'baja') {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">📝</span><div><strong>Externalización narrativa</strong><br>Oye ${nombre}, la tristeza baja la energía. Escribe en un cuaderno exactamente lo que sientes, sin filtros. Ponerlo en papel evita que la mente dé vueltas.</div></div>`;
+            } else if (intAct === 'media') {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🪴</span><div><strong>Conexión y cuidado externo</strong><br>${nombre}, haz algo que requiera tu atención suave. Riega o limpia las hojas de tus plantas, o acaricia y juega con un gato/mascota. Esto ancla al presente.</div></div>`;
+            } else {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🧊</span><div><strong>Choque Térmico (TIPP)</strong><br>Es momento de regular el cuerpo, ${nombre}. Lávate la cara con agua muy fría o sostén unos cubos de hielo. Esto activa un reflejo que baja tu ritmo cardíaco y frena el llanto extremo.</div></div>`;
+            }
+        } 
+        else if (emocionAct === 'Ansiedad') {
+            if (intAct === 'baja') {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🧠</span><div><strong>Sobrecarga cognitiva</strong><br>${nombre}, quitémosle energía a la ansiedad. Cuenta hacia atrás desde 100 de 7 en 7, o recita el alfabeto (A-1, B-2, C-3).</div></div>`;
+            } else if (intAct === 'media') {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">📳</span><div><strong>Descarga Somática (Shaking)</strong><br>${nombre}, ponte de pie y sacude tu cuerpo vigorosamente por 1 minuto. Empieza por las manos, brazos, hombros y piernas para liberar adrenalina.</div></div>`;
+            } else {
+                html = `<div class="tarjeta-ruta" onclick="iniciarSentidos()" style="background:#fff3cd; cursor:pointer; border-color:#d35400;"><span style="font-size:30px">🖐️</span><div><strong>Enraizamiento (Grounding 5-4-3-2-1)</strong><br>Toque aquí para iniciar un ejercicio guiado que obligará a tu mente a salir del futuro y anclarse al presente.</div></div>`;
+            }
+        }
+        else if (emocionAct === 'Vergüenza') {
+            if (intAct === 'baja') {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🪞</span><div><strong>Autocompasión</strong><br>${nombre}, mírate al espejo y dite exactamente las mismas palabras amables que le dirías a un amigo muy querido que acaba de cometer ese mismo error.</div></div>`;
+            } else if (intAct === 'media') {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">⚖️</span><div><strong>Tribunal de evidencia</strong><br>Divide una hoja en dos, ${nombre}. A un lado pon la idea catastrófica. Al otro, escribe los hechos objetivos y comprobables que demuestran que esa idea no es 100% cierta.</div></div>`;
+            } else {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🦸‍♀️</span><div><strong>Acción Opuesta</strong><br>La vergüenza te pide esconderte. ${nombre}, haz lo opuesto: adopta una postura expansiva (cabeza en alto, pecho abierto) y camina así. Cambiar tu cuerpo altera el mensaje a tu cerebro.</div></div>`;
+            }
+        }
+        else if (emocionAct === 'Enojo') {
+            if (intAct === 'baja') {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🚶</span><div><strong>Ruptura visual</strong><br>${nombre}, date la vuelta y sal de ese espacio por 3 a 5 minutos. Aprovecha para abrir y cerrar la mandíbula y estirar el cuello para liberar tensión.</div></div>`;
+            } else if (intAct === 'media') {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">📄</span><div><strong>Canalización segura</strong><br>Tu cuerpo quiere destruir, déjalo de forma segura. ${nombre}, toma revistas viejas o cartón y rásgalo con mucha fuerza, o amasa plastilina golpeándola contra una mesa.</div></div>`;
+            } else {
+                html = `<div class="tarjeta-ruta"><span style="font-size:30px">🧱</span><div><strong>Esfuerzo Isométrico</strong><br>Acércate a una pared sólida, ${nombre}. Pon ambas manos planas y empuja con toda tu fuerza por 60 segundos, como si quisieras mover el edificio. Esto agota tu adrenalina rápido.</div></div>`;
+            }
+        }
+
+        cont.innerHTML = html;
+        navegar('pantalla-estrategias');
+    }
+
+    function finalizarRuta() {
+        if(insignias < maxInsignias) {
+            document.getElementById(`insignia-${insignias}`).classList.add('obtenida');
+            insignias++;
+        }
+        document.getElementById('texto-conteo-insignias').innerText = insignias;
+        document.getElementById('nombre-exito').innerText = nombre;
+        navegar('pantalla-exito');
+    }
+
+    function verGaleriaInsignias() { navegar('pantalla-galeria'); }
+
+    function reiniciarApp() {
+        emocionAct = ""; intAct = "";
+        document.querySelectorAll('.btn-señal').forEach(b => b.classList.remove('seleccionada'));
+        document.querySelectorAll('.btn-int').forEach(b => b.classList.remove('activa'));
+        document.querySelectorAll('.etiqueta').forEach(b => b.classList.remove('activa'));
+        detenerRespiracion();
+        navegar('pantalla-inicio');
+    }
+
+    /* --- RESPIRACIÓN --- */
+    let intResp;
+    let fasesResp = ["Inhala...", "Sostén...", "Exhala...", "Sostén..."];
+    let fase = 0;
+    function prepararRespiracion() {
+        document.getElementById('punto-respiracion').style.animation = "none";
+        document.getElementById('punto-respiracion').style.display = "none";
+        document.getElementById('texto-respiracion').innerHTML = "Prepárate...";
+        document.getElementById('btn-iniciar-resp').style.display = "inline-block";
+        navegar('pantalla-respiracion');
+    }
+    function iniciarAnimacionRespiracion() {
+        let p = document.getElementById('punto-respiracion');
+        document.getElementById('btn-iniciar-resp').style.display = "none";
+        p.style.display = "block";
+        void p.offsetWidth;
+        p.style.animation = "circuitoCuadrado 16s linear infinite";
+        fase = 0;
+        document.getElementById('texto-respiracion').innerText = fasesResp[fase];
+        if(intResp) clearInterval(intResp);
+        intResp = setInterval(() => {
+            fase = (fase + 1) % 4;
+            document.getElementById('texto-respiracion').innerText = fasesResp[fase];
+        }, 4000);
+    }
+    function detenerRespiracion() {
+        clearInterval(intResp);
+        document.getElementById('punto-respiracion').style.display = "none";
+        navegar('pantalla-estrategias');
+    }
+
+    /* --- 5 SENTIDOS --- */
+    const pasos = [
+        { e: "👀", t: "Busca y nombra en voz alta 5 cosas que puedas ver." },
+        { e: "✋", t: "Toca 4 objetos y concéntrate en su textura." },
+        { e: "👂", t: "Encuentra 3 sonidos diferentes a tu alrededor." },
+        { e: "👃", t: "Respira profundo e intenta identificar 2 olores." },
+        { e: "👅", t: "Reconoce 1 sabor (toma agua o traga saliva)." }
+    ];
+    let pasoAct = 0;
+    function iniciarSentidos() {
+        pasoAct = 0;
+        actTarjetaSentido();
+        document.getElementById('btn-siguiente-sentido').innerText = "Siguiente";
+        navegar('pantalla-sentidos');
+    }
+    function actTarjetaSentido() {
+        document.getElementById('tarjeta-sentido-activa').innerHTML = `<span style="font-size:50px">${pasos[pasoAct].e}</span><p style="margin:0;text-align:center">${pasos[pasoAct].t}</p>`;
+    }
+    function siguienteSentido() {
+        if (pasoAct < pasos.length - 1) {
+            pasoAct++; actTarjetaSentido();
+            if (pasoAct === pasos.length - 1) document.getElementById('btn-siguiente-sentido').innerText = "Terminar";
+        } else { navegar('pantalla-estrategias'); }
+    }
+</script>
+
+</body>
+</html>
